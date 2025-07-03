@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sean Chuang | Software Engineer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Harmony -->
+    <!-- Application Structure Plan: A single-page portfolio with a sticky top navigation bar for easy access to key sections: a hero intro, an interactive skills dashboard with charts and filters, a detailed project showcase with expandable cards, and a chronological experience/education timeline. This structure is chosen to allow non-linear exploration, enabling a recruiter to quickly assess key qualifications (like skills and projects) before diving into chronological history, enhancing usability and impact. -->
+    <!-- Visualization & Content Choices: 
+        - Hero: Inform -> Static Text -> Simple, direct intro.
+        - Skills (Languages): Compare -> Bar Chart (Chart.js) -> To visually quantify language experience, which is more engaging than a list. Interaction: Tooltips on hover provide context.
+        - Skills (Tools): Organize -> Filterable Tag Grid (HTML/CSS/JS) -> Allows users to quickly find relevant technologies based on their needs (e.g., "Show me all database tech"). Interaction: Clickable filter buttons.
+        - Projects: Organize/Inform -> Interactive Cards (HTML/CSS/JS) -> Presents projects in a scannable grid. Interaction: Clicking a card expands it to show details without leaving the page, maintaining context.
+        - Experience/Education: Change/Inform -> Vertical Timeline (HTML/CSS) -> Clearly shows career and academic progression over time in a universally understood format.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        .project-card-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out;
+        }
+        .project-card.open .project-card-details {
+            max-height: 1000px; /* Large enough to fit content */
+        }
+        .project-card.open .arrow-icon {
+            transform: rotate(180deg);
+        }
+        .arrow-icon {
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+    <header class="bg-slate-50/80 backdrop-blur-lg sticky top-0 z-50 border-b border-slate-200">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <a href="#hero" class="text-xl font-bold text-slate-800">Sean Chuang</a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#skills" class="text-slate-600 hover:text-cyan-600 px-3 py-2 rounded-md text-sm font-medium">Skills</a>
+                        <a href="#projects" class="text-slate-600 hover:text-cyan-600 px-3 py-2 rounded-md text-sm font-medium">Projects</a>
+                        <a href="#experience" class="text-slate-600 hover:text-cyan-600 px-3 py-2 rounded-md text-sm font-medium">Experience</a>
+                        <a href="#contact" class="bg-cyan-600 text-white hover:bg-cyan-700 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                    </div>
+                </div>
+                <div class="-mr-2 flex md:hidden">
+                    <button id="mobile-menu-button" type="button" class="bg-slate-200 inline-flex items-center justify-center p-2 rounded-md text-slate-500 hover:text-slate-600 hover:bg-slate-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-200 focus:ring-cyan-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <div id="hamburger-icon" class="block h-6 w-6">
+                           <span class="block h-0.5 w-6 bg-current transform transition duration-500 ease-in-out"></span>
+                           <span class="block h-0.5 w-6 bg-current mt-1.5 transform transition duration-500 ease-in-out"></span>
+                           <span class="block h-0.5 w-6 bg-current mt-1.5 transform transition duration-500 ease-in-out"></span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </nav>
+        <div class="hidden md:hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#skills" class="text-slate-600 hover:text-cyan-600 block px-3 py-2 rounded-md text-base font-medium">Skills</a>
+                <a href="#projects" class="text-slate-600 hover:text-cyan-600 block px-3 py-2 rounded-md text-base font-medium">Projects</a>
+                <a href="#experience" class="text-slate-600 hover:text-cyan-600 block px-3 py-2 rounded-md text-base font-medium">Experience</a>
+                <a href="#contact" class="bg-cyan-600 text-white hover:bg-cyan-700 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="py-20 md:py-32">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-slate-800">Hi! I'm Sean.</h1>
+                <p class="mt-4 text-lg md:text-xl max-w-3xl mx-auto text-slate-600">I'm a software engineer with a background in Computer Science and Linguistics. I specialize in high-performance systems programming, distributed computing, and full-stack engineering. Passionate about building robust, scalable, and efficient software solutions.</p>
+                <div class="mt-8 flex justify-center space-x-4">
+                    <a href="mailto:seanc7@alumni.upenn.edu" class="bg-cyan-600 text-white px-8 py-3 rounded-md font-medium hover:bg-cyan-700 transition-colors">Get In Touch</a>
+                    <a href="#projects" class="bg-slate-200 text-slate-700 px-8 py-3 rounded-md font-medium hover:bg-slate-300 transition-colors">View My Work</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-800 sm:text-4xl">Technical Skills</h2>
+                    <p class="mt-4 text-lg text-slate-600">A snapshot of my technical capabilities, from backend systems to frontend frameworks.</p>
+                </div>
+
+                <div class="mt-16">
+                    <h3 class="text-2xl font-semibold text-center text-slate-800 mb-8">Programming Languages</h3>
+                    <div class="chart-container">
+                        <canvas id="languagesChart"></canvas>
+                    </div>
+                    <p class="text-center mt-4 text-sm text-slate-500">This chart illustrates my experience level with various programming languages, acquired through academic coursework, projects, and professional work.</p>
+                </div>
+
+                <div class="mt-20">
+                    <h3 class="text-2xl font-semibold text-center text-slate-800">Tools & Frameworks</h3>
+                    <div id="tools-filters" class="mt-8 flex justify-center flex-wrap gap-2">
+                         <button data-filter="all" class="filter-btn bg-cyan-600 text-white px-4 py-2 rounded-full text-sm font-medium">All</button>
+                         <button data-filter="backend" class="filter-btn bg-slate-200 text-slate-700 px-4 py-2 rounded-full text-sm font-medium">Backend</button>
+                         <button data-filter="frontend" class="filter-btn bg-slate-200 text-slate-700 px-4 py-2 rounded-full text-sm font-medium">Frontend</button>
+                         <button data-filter="database" class="filter-btn bg-slate-200 text-slate-700 px-4 py-2 rounded-full text-sm font-medium">Databases</button>
+                         <button data-filter="cloud-devops" class="filter-btn bg-slate-200 text-slate-700 px-4 py-2 rounded-full text-sm font-medium">Cloud & DevOps</button>
+                         <button data-filter="testing-debug" class="filter-btn bg-slate-200 text-slate-700 px-4 py-2 rounded-full text-sm font-medium">Testing & Debugging</button>
+                    </div>
+                    <div id="tools-grid" class="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-4xl mx-auto">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects" class="py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-800 sm:text-4xl">Project Showcase</h2>
+                    <p class="mt-4 text-lg text-slate-600">A selection of projects demonstrating my ability to solve complex problems and build functional applications.</p>
+                </div>
+                <div id="projects-container" class="mt-16 space-y-8">
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="py-20 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold tracking-tight text-slate-800 sm:text-4xl">Career & Education</h2>
+                    <p class="mt-4 text-lg text-slate-600">My professional journey and academic background.</p>
+                </div>
+                <div class="mt-16">
+                    <div id="timeline-container" class="relative max-w-3xl mx-auto">
+                        <div class="absolute left-1/2 -ml-0.5 w-1 h-full bg-slate-200"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer id="contact" class="bg-slate-800 text-slate-300">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-2xl font-bold text-white">Let's Connect</h2>
+            <p class="mt-2">I'm currently seeking new opportunities. Feel free to reach out.</p>
+            <p class="mt-4 font-semibold text-cyan-400">seanc7@alumni.upenn.edu</p>
+            <div class="mt-6 flex justify-center space-x-6">
+                 <a href="https://github.com/sungenchuang7" class="hover:text-white">GitHub</a>
+                 <a href="https://www.linkedin.com/in/sean-sung-en-chuang/" class="hover:text-white">LinkedIn</a>
+            </div>
+            <p class="mt-8 text-sm text-slate-400">&copy; 2025 Sean Chuang. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const languagesData = {
+                labels: ['C++', 'C', 'Java', 'Python', 'JavaScript/TypeScript', 'SQL'],
+                datasets: [{
+                    label: 'Experience Level',
+                    data: [95, 90, 85, 80, 75, 80],
+                    backgroundColor: 'rgba(22, 163, 175, 0.6)',
+                    borderColor: 'rgba(22, 163, 175, 1)',
+                    borderWidth: 1
+                }]
+            };
+
+            const languagesChartCtx = document.getElementById('languagesChart').getContext('2d');
+            new Chart(languagesChartCtx, {
+                type: 'bar',
+                data: languagesData,
+                options: {
+                    indexAxis: 'y',
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%'
+                                }
+                            }
+                        },
+                        y: {
+                           ticks: {
+                                font: {
+                                    size: 14,
+                                }
+                           }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.x !== null) {
+                                        let score = context.parsed.x;
+                                        let level = "Proficient";
+                                        if(score > 90) level = "Expert";
+                                        else if (score > 80) level = "Advanced";
+                                        label += level;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            const toolsData = [
+                { name: 'Git', category: 'cloud-devops' },
+                { name: 'GitLab CI/CD', category: 'cloud-devops' },
+                { name: 'GDB', category: 'testing-debug' },
+                { name: 'PyTorch', category: 'backend' },
+                { name: 'Node.js', category: 'backend' },
+                { name: 'React.js', category: 'frontend' },
+                { name: 'MySQL', category: 'database' },
+                { name: 'MongoDB', category: 'database' },
+                { name: 'JUnit', category: 'testing-debug' },
+                { name: 'AWS (S3, EC2, RDS)', category: 'cloud-devops' },
+                { name: 'Docker', category: 'cloud-devops' },
+                { name: 'Neo4j', category: 'database' },
+                { name: 'Spring Boot', category: 'backend' },
+                { name: 'Apache Spark', category: 'backend' },
+                { name: 'Valgrind', category: 'testing-debug' },
+                { name: 'Helgrind', category: 'testing-debug' },
+                { name: 'Azure DevOps', category: 'cloud-devops' },
+            ];
+
+            const toolsGrid = document.getElementById('tools-grid');
+            const filtersContainer = document.getElementById('tools-filters');
+
+            function renderTools(filter) {
+                toolsGrid.innerHTML = '';
+                const filteredTools = (filter === 'all') ? toolsData : toolsData.filter(tool => tool.category === filter);
+                filteredTools.forEach(tool => {
+                    const toolEl = document.createElement('div');
+                    toolEl.className = 'bg-slate-100 text-slate-600 text-center p-3 rounded-md text-sm font-medium';
+                    toolEl.textContent = tool.name;
+                    toolsGrid.appendChild(toolEl);
+                });
+            }
+
+            filtersContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('filter-btn')) {
+                    const filter = e.target.dataset.filter;
+                    document.querySelectorAll('.filter-btn').forEach(btn => {
+                        btn.classList.remove('bg-cyan-600', 'text-white');
+                        btn.classList.add('bg-slate-200', 'text-slate-700');
+                    });
+                    e.target.classList.add('bg-cyan-600', 'text-white');
+                    e.target.classList.remove('bg-slate-200', 'text-slate-700');
+                    renderTools(filter);
+                }
+            });
+
+            renderTools('all');
+            
+            const projectsData = [
+                {
+                    title: 'QuakerCloud - Distributed File Storage & Email Service',
+                    tech: ['C++', 'Multi-threading', 'Fault Tolerance', 'Load Balancing'],
+                    summary: 'A distributed key-value store & SMTP email service system inspired by Google Big Table, built with a focus on high availability and performance.',
+                    details: 'This project involved designing and implementing a multi-threaded backend master server to manage data replication, recovery protocols, and load balance requests from frontend clients. A key feature was the real-time server status monitoring via a heartbeat mechanism to ensure system reliability and optimize storage server availability.'
+                },
+                {
+                    title: 'QuickSearch - Mini Directory Search Engine',
+                    tech: ['C', 'POSIX Threads', 'Mutexes', 'Web Security'],
+                    summary: 'Engineered a multi-threaded search engine utilizing a custom-built inverted index for fast, full-text search over large document corpora.',
+                    details: 'Implemented a POSIX thread pool to efficiently handle a high volume of concurrent search requests. Ensured thread safety with mutexes and condition variables. Integrated critical security features to prevent common web vulnerabilities, including Cross-Site Scripting (XSS) through HTML escaping and directory traversal attacks via path sanitization.'
+                },
+                {
+                    title: 'Pennstagram - Social Media Network App',
+                    tech: ['React.js', 'Node.js', 'MongoDB', 'AWS S3', 'Heroku'],
+                    summary: 'A full-stack social media web app allowing University of Pennsylvania students to share their campus experiences with others.',
+                    details: 'Integrated AWS S3 for scalable object storage, enabling users to upload large media files seamlessly. The application backend was built with Node.js and Express, connected to a MongoDB database. A comprehensive testing suite was developed, achieving 98% code coverage through a combination of unit, mocking, integration, and end-to-end tests.'
+                },
+                {
+                    title: 'LC4 Disassembler - Reverse Engineering Software',
+                    tech: ['C', 'LC4 Assembly', 'GDB', 'Valgrind'],
+                    summary: 'Explored low-level reverse engineering by building a disassembler that parses and translates binary machine code back to assembly language.',
+                    details: 'This project was based on the LC4 Instruction Set Architecture. It required a deep understanding of computer architecture and low-level memory management. Development was performed with extensive unit testing, utilizing GDB for debugging and Valgrind for memory leak detection to ensure software correctness and robustness.'
+                }
+            ];
+
+            const projectsContainer = document.getElementById('projects-container');
+            projectsData.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'project-card bg-white rounded-lg shadow-md overflow-hidden';
+                card.innerHTML = `
+                    <div class="p-6 cursor-pointer project-card-header">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-xl font-semibold text-slate-800">${project.title}</h4>
+                                <p class="mt-2 text-slate-600">${project.summary}</p>
+                            </div>
+                            <div class="arrow-icon ml-4 flex-shrink-0 text-slate-400">
+                                <span class="text-2xl font-thin">&#8964;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-card-details bg-slate-50">
+                        <div class="p-6">
+                            <p class="text-slate-600">${project.details}</p>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                ${project.tech.map(t => `<span class="bg-cyan-100 text-cyan-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${t}</span>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                projectsContainer.appendChild(card);
+            });
+            
+            projectsContainer.addEventListener('click', function(e) {
+                const header = e.target.closest('.project-card-header');
+                if (header) {
+                    const card = header.closest('.project-card');
+                    card.classList.toggle('open');
+                }
+            });
+
+            const timelineData = [
+                {
+                    type: 'work',
+                    date: 'Sept 2024 - Present',
+                    title: 'Software Developer',
+                    company: 'Expeditors International',
+                    details: 'Developing EXP.O NOW for real-time shipment analytics. Modernizing Java codebases to reduce vulnerabilities and building GitLab CI/CD pipelines to streamline deployment.'
+                },
+                {
+                    type: 'education',
+                    date: 'Graduated May 2024',
+                    title: "Master's in Computer Science",
+                    company: 'University of Pennsylvania',
+                    details: 'Relevant Coursework: Distributed Systems, Computer Architecture, Big Data Analytics, Systems Programming.'
+                },
+                {
+                    type: 'work',
+                    date: 'Jan 2024 - May 2024',
+                    title: 'Teaching Assistant, Intro to Systems Programming',
+                    company: 'University of Pennsylvania',
+                    details: 'Led recitations and office hours, helping students debug C/C++ code and understand core concepts like multi-threading, IPC, and virtual memory.'
+                },
+                {
+                    type: 'education',
+                    date: 'Graduated June 2021',
+                    title: "Bachelor's in Linguistics",
+                    company: 'National Taiwan University',
+                    details: 'Relevant Coursework: Phonetics, Computational Linguistics, Chinese-English Translation and Interpretation.'
+                },
+            ];
+
+            const timelineContainer = document.getElementById('timeline-container');
+            timelineData.forEach((item, index) => {
+                const isLeft = index % 2 === 0;
+                const timelineItem = document.createElement('div');
+                timelineItem.className = `relative mb-8 flex items-center ${isLeft ? 'justify-start' : 'justify-end'}`;
+                timelineItem.innerHTML = `
+                    <div class="absolute w-1/2 h-0.5 ${isLeft ? 'right-0' : 'left-0'} bg-slate-200"></div>
+                    <div class="absolute left-1/2 -ml-2.5 w-5 h-5 rounded-full ${item.type === 'work' ? 'bg-cyan-600' : 'bg-slate-600'} border-4 border-white"></div>
+                    <div class="w-1/2 ${isLeft ? 'pr-8' : 'pl-8'}">
+                        <div class="bg-white p-4 rounded-lg shadow-md">
+                            <p class="text-sm text-slate-500">${item.date}</p>
+                            <h5 class="mt-1 font-semibold text-slate-800">${item.title}</h5>
+                            <p class="text-sm font-medium text-cyan-700">${item.company}</p>
+                            <p class="mt-2 text-sm text-slate-600">${item.details}</p>
+                        </div>
+                    </div>
+                `;
+                timelineContainer.appendChild(timelineItem);
+            });
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const hamburgerIcon = document.getElementById('hamburger-icon');
+            mobileMenuButton.addEventListener('click', () => {
+                const isExpanded = mobileMenuButton.getAttribute('aria-expanded') === 'true';
+                mobileMenuButton.setAttribute('aria-expanded', !isExpanded);
+                mobileMenu.classList.toggle('hidden');
+                hamburgerIcon.children[0].classList.toggle('rotate-45');
+                hamburgerIcon.children[0].classList.toggle('translate-y-2');
+                hamburgerIcon.children[1].classList.toggle('opacity-0');
+                hamburgerIcon.children[2].classList.toggle('-rotate-45');
+                hamburgerIcon.children[2].classList.toggle('-translate-y-2');
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    if(this.getAttribute('href').length > 1) {
+                         e.preventDefault();
+                         document.querySelector(this.getAttribute('href')).scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                        if (mobileMenu.classList.contains('hidden') === false) {
+                            mobileMenuButton.click();
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
