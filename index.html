@@ -369,7 +369,7 @@
           >
         </div>
         <p class="mt-8 text-sm text-slate-400">
-          &copy; 2025 Sean Chuang. All rights reserved.
+          &copy; <span id="year"></span> Sean Chuang. All rights reserved.
         </p>
       </div>
     </footer>
@@ -377,6 +377,9 @@
     <script>
       document.addEventListener('DOMContentLoaded', function () {
         // Programming languages chart removed: replaced by simple language lists in the DOM.
+        // Set footer year dynamically
+        const yearEl = document.getElementById('year');
+        if (yearEl) yearEl.textContent = new Date().getFullYear();
 
         const toolsData = [
           { name: 'Git', category: 'cloud-devops' },
